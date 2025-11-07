@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import { spawn } from 'child_process'
 import path from 'path'
 
@@ -21,9 +21,13 @@ export class AudioSessionManager {
 
   constructor() {
     // Path to PowerShell scripts
-    // In development: __dirname is dist-electron, so go up one level to project root
-    // In production: same structure
-    this.scriptsPath = path.join(__dirname, '../scripts')
+    // In development: scripts are in project root
+    // In production: scripts are in resources folder (extraResources)
+    if (app.isPackaged) {
+      this.scriptsPath = path.join(process.resourcesPath, 'scripts')
+    } else {
+      this.scriptsPath = path.join(__dirname, '../../scripts')
+    }
     this.initialize()
   }
 
