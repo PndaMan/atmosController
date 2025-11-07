@@ -1,5 +1,7 @@
 import { app, BrowserWindow, globalShortcut } from 'electron'
 import path from 'path'
+import { audioManager } from './services/audioSessionManager'
+import { registerAudioHandlers } from './ipc/audioHandlers'
 
 // Disable GPU acceleration on Windows for better transparency support
 if (process.platform === 'win32') {
@@ -36,14 +38,25 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
   }
 
+  // Set audio manager window reference and start monitoring
+  audioManager.setWindow(mainWindow)
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    audioManager.startMonitoring()
+  })
+
   // Handle window close
   mainWindow.on('closed', () => {
+    audioManager.stopMonitoring()
     mainWindow = null
   })
 }
 
 // App lifecycle
 app.whenReady().then(() => {
+  // Register IPC handlers for audio control
+  registerAudioHandlers()
+
   createWindow()
 
   // Register global hotkey (Alt+Shift+D) to toggle window
@@ -72,9 +85,10 @@ app.on('window-all-closed', () => {
   }
 })
 
-// Unregister all shortcuts when quitting
+// Unregister all shortcuts and cleanup audio manager when quitting
 app.on('will-quit', () => {
   globalShortcut.unregisterAll()
+  audioManager.cleanup()
 })
 
 // Handle errors

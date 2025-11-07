@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { VolumeMixer } from './components/VolumeMixer'
 
 function App() {
   return (
@@ -10,9 +11,9 @@ function App() {
         className="relative"
       >
         {/* Main glass window with animated glow */}
-        <div className="glass-window glow-border rounded-lg p-6 min-w-[540px]">
+        <div className="glass-window glow-border rounded-lg p-6 min-w-[420px] max-w-[500px]">
           {/* Header bar (draggable) */}
-          <div className="drag-region mb-8 flex items-center justify-between">
+          <div className="drag-region mb-6 flex items-center justify-between">
             <h1 className="text-lg font-light text-white/90 tracking-wide">
               ETHEREAL MIXER
             </h1>
@@ -28,28 +29,15 @@ function App() {
             </div>
           </div>
 
-          {/* Feature cards */}
-          <div className="grid grid-cols-3 gap-3 mb-6 no-drag-region">
-            <div className="glass-dark rounded-md p-4 hover:bg-white/3 transition-all duration-150 cursor-pointer border border-white/5 hover:border-white/10">
-              <div className="text-white/40 text-xs font-light mb-1">MIXER</div>
-              <div className="text-white/20 text-[10px]">Phase 2</div>
-            </div>
-
-            <div className="glass-dark rounded-md p-4 hover:bg-white/3 transition-all duration-150 cursor-pointer border border-white/5 hover:border-white/10">
-              <div className="text-white/40 text-xs font-light mb-1">VISUALIZER</div>
-              <div className="text-white/20 text-[10px]">Phase 3</div>
-            </div>
-
-            <div className="glass-dark rounded-md p-4 hover:bg-white/3 transition-all duration-150 cursor-pointer border border-white/5 hover:border-white/10">
-              <div className="text-white/40 text-xs font-light mb-1">SETTINGS</div>
-              <div className="text-white/20 text-[10px]">Phase 4</div>
-            </div>
+          {/* Volume Mixer */}
+          <div className="no-drag-region">
+            <VolumeMixer />
           </div>
 
           {/* Minimal info bar */}
-          <div className="glass rounded-md px-3 py-2 no-drag-region flex items-center justify-between">
+          <div className="glass rounded-md px-3 py-1.5 mt-4 no-drag-region flex items-center justify-between">
             <div className="text-[10px] text-white/30 font-light tracking-wider">
-              PHASE 1 COMPLETE
+              PHASE 2 COMPLETE
             </div>
             <kbd className="px-2 py-0.5 bg-white/5 rounded text-[10px] text-white/40 border border-white/10 font-mono">
               Alt+Shift+D
