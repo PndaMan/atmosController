@@ -222,3 +222,6 @@ bld/
 
 # electron-builder
 dist_electron/
+
+# Project-specific files
+claude_save.txt
