@@ -12,12 +12,6 @@ export interface AudioSession {
   icon?: string
 }
 
-interface PowerShellResult {
-  success?: boolean
-  error?: string
-  [key: string]: any
-}
-
 export class AudioSessionManager {
   private window: BrowserWindow | null = null
   private updateInterval: NodeJS.Timeout | null = null
@@ -105,7 +99,7 @@ export class AudioSessionManager {
           id: session.Id || session.Pid?.toString() || Math.random().toString(),
           name: session.Name || 'Unknown',
           volume: Math.round(session.Volume) || 100,
-          isMuted: session.IsMuted || false,
+          isMuted: Boolean(session.IsMuted),
           appName: session.Name || 'Unknown',
           pid: session.Pid,
           icon: session.Icon
@@ -216,7 +210,7 @@ export class AudioSessionManager {
       const result = await this.executePowerShell('AudioSessionControl.ps1', [
         '-Action', 'setmute',
         '-ProcessId', session.pid.toString(),
-        '-Mute', muted.toString()
+        '-Mute', muted ? '1' : '0'
       ])
 
       if (result.success) {

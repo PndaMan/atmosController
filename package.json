@@ -48,9 +48,12 @@
       "dist/**/*",
       "dist-electron/**/*"
     ],
+    "extraResources": [
+      "scripts/**/*"
+    ],
     "win": {
       "target": [
-        "nsis"
+        "dir"
       ],
       "icon": "assets/icon.ico"
     },

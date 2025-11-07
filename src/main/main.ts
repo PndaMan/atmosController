@@ -24,9 +24,20 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      backgroundThrottling: false
+      backgroundThrottling: false,
+      enableWebSQL: false
     },
     backgroundColor: '#00000000' // Fully transparent
+  })
+
+  // Enable system audio capture
+  mainWindow.webContents.session.setPermissionRequestHandler((_, permission, callback) => {
+    const allowed = ['media', 'mediaKeySystem', 'geolocation', 'notifications', 'midi', 'midiSysex', 'pointerLock', 'fullscreen', 'openExternal']
+    if (allowed.includes(permission)) {
+      callback(true)
+    } else {
+      callback(false)
+    }
   })
 
   // In development, load from Vite dev server

@@ -10,20 +10,21 @@ interface AudioSession {
   isMuted: boolean
   appName: string
   pid?: number
+  icon?: string
 }
 
 const SessionControl = memo(function SessionControl({
   session,
   volume,
+  isMuted,
   onVolumeChange,
-  onMuteToggle,
-  onDragStart
+  onMuteToggle
 }: {
   session: AudioSession
   volume: number
+  isMuted: boolean
   onVolumeChange: (sessionId: string, e: React.FormEvent<HTMLInputElement>) => void
   onMuteToggle: (sessionId: string, currentMuted: boolean) => void
-  onDragStart: (sessionId: string) => void
 }) {
   return (
     <motion.div
@@ -56,16 +57,16 @@ const SessionControl = memo(function SessionControl({
             {volume}%
           </span>
           <button
-            onClick={() => onMuteToggle(session.id, session.isMuted)}
+            onClick={() => onMuteToggle(session.id, isMuted)}
             className={`w-5 h-5 rounded flex items-center justify-center text-[9px] font-bold
                       transition-all duration-150 border
                       ${
-                        session.isMuted
+                        isMuted
                           ? 'bg-red-500/20 border-red-500/40 text-red-400'
                           : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
                       }`}
           >
-            {session.isMuted ? 'M' : 'S'}
+            {isMuted ? 'M' : 'S'}
           </button>
         </div>
       </div>
@@ -76,16 +77,10 @@ const SessionControl = memo(function SessionControl({
         value={volume}
         onChange={(e) => onVolumeChange(session.id, e)}
         onInput={(e) => onVolumeChange(session.id, e)}
-        onMouseDown={(e) => {
-          e.stopPropagation()
-          onDragStart(session.id)
-        }}
-        onTouchStart={(e) => {
-          e.stopPropagation()
-          onDragStart(session.id)
-        }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         draggable={false}
-        disabled={session.isMuted}
+        disabled={isMuted}
         className="w-full h-0.5 bg-white/10 rounded-full appearance-none cursor-pointer will-change-auto
                  disabled:opacity-30 disabled:cursor-not-allowed
                  [&::-webkit-slider-thumb]:appearance-none
@@ -199,7 +194,7 @@ const MasterVolumeControl = memo(function MasterVolumeControl({
 export function VolumeMixer() {
   const { sessions, masterVolume: storeMasterVolume } = useAudioStore()
   const [localSessionVolumes, setLocalSessionVolumes] = useState<Record<string, number>>({})
-  const [isDraggingSession, setIsDraggingSession] = useState<Set<string>>(new Set())
+  const [localMutedSessions, setLocalMutedSessions] = useState<Record<string, boolean>>({})
 
   const sessionVolumeTimeouts = useRef<Record<string, NodeJS.Timeout>>({})
   const sessionVolumeThrottles = useRef<Record<string, NodeJS.Timeout>>({})
@@ -244,25 +239,25 @@ export function VolumeMixer() {
         audioService.setVolume(sessionId, value)
         lastSessionVolumesSent.current[sessionId] = value
       }
-      setIsDraggingSession(prev => {
-        const next = new Set(prev)
-        next.delete(sessionId)
-        return next
-      })
     }, 30)
   }, [])
 
-  const handleSessionDragStart = useCallback((sessionId: string) => {
-    setIsDraggingSession(prev => new Set(prev).add(sessionId))
-  }, [])
-
   const handleMuteToggle = useCallback((sessionId: string, currentMuted: boolean) => {
-    audioService.setMute(sessionId, !currentMuted)
+    // Update local state immediately for responsive UI
+    const newMutedState = !currentMuted
+    setLocalMutedSessions(prev => ({ ...prev, [sessionId]: newMutedState }))
+
+    // Send to backend
+    audioService.setMute(sessionId, newMutedState)
   }, [])
 
   const getSessionVolume = useCallback((session: { id: string; volume: number }) => {
     return localSessionVolumes[session.id] ?? session.volume
   }, [localSessionVolumes])
+
+  const getSessionMuted = useCallback((session: { id: string; isMuted: boolean }) => {
+    return localMutedSessions[session.id] ?? session.isMuted
+  }, [localMutedSessions])
 
   return (
     <div className="space-y-4">
@@ -289,9 +284,9 @@ export function VolumeMixer() {
                 key={session.id}
                 session={session}
                 volume={getSessionVolume(session)}
+                isMuted={getSessionMuted(session)}
                 onVolumeChange={handleVolumeChange}
                 onMuteToggle={handleMuteToggle}
-                onDragStart={handleSessionDragStart}
               />
             ))
           )}

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { VolumeMixer } from './components/VolumeMixer'
+import { AudioVisualizer } from './components/AudioVisualizer'
 import { windowService } from './services/windowService'
 
 function App() {
@@ -18,6 +19,11 @@ function App() {
             <h1 className="text-lg font-medium text-white/90 tracking-wider">
               atmosController
             </h1>
+          </div>
+
+          {/* Audio Visualizer */}
+          <div className="no-drag-region mb-4">
+            <AudioVisualizer />
           </div>
 
           {/* Volume Mixer */}

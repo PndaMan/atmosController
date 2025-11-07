@@ -13,7 +13,7 @@ param(
     [int]$Volume,
 
     [Parameter(Mandatory=$false)]
-    [bool]$Mute
+    [string]$Mute
 )
 
 Add-Type -Language CSharp -TypeDefinition @"
@@ -389,11 +389,16 @@ try {
             if (-not $ProcessId) {
                 throw "ProcessId is required for setmute action"
             }
-            $success = [WASAPIControl.AudioSessionManager]::SetSessionMute($ProcessId, $Mute)
+            # Convert string to boolean (accepts "1", "0", "true", "false", "$true", "$false")
+            $muteValue = $false
+            if ($Mute -eq "1" -or $Mute -eq "true" -or $Mute -eq "$true" -or $Mute -eq "True") {
+                $muteValue = $true
+            }
+            $success = [WASAPIControl.AudioSessionManager]::SetSessionMute($ProcessId, $muteValue)
             @{
                 success = $success
                 pid = $ProcessId
-                muted = $Mute
+                muted = $muteValue
             } | ConvertTo-Json
         }
     }
