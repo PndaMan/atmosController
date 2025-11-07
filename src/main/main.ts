@@ -2,6 +2,7 @@ import { app, BrowserWindow, globalShortcut } from 'electron'
 import path from 'path'
 import { audioManager } from './services/audioSessionManager'
 import { registerAudioHandlers } from './ipc/audioHandlers'
+import { registerWindowHandlers } from './ipc/windowHandlers'
 
 // Disable GPU acceleration on Windows for better transparency support
 if (process.platform === 'win32') {
@@ -14,7 +15,7 @@ let mainWindow: BrowserWindow | null = null
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 850,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -56,6 +57,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   // Register IPC handlers for audio control
   registerAudioHandlers()
+  registerWindowHandlers()
 
   createWindow()
 

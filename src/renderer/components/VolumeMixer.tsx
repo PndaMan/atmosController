@@ -36,6 +36,17 @@ const SessionControl = memo(function SessionControl({
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
+          {session.icon ? (
+            <img
+              src={`data:image/png;base64,${session.icon}`}
+              alt={session.name}
+              className="w-4 h-4 flex-shrink-0"
+            />
+          ) : (
+            <div className="w-4 h-4 rounded bg-white/10 flex-shrink-0 flex items-center justify-center">
+              <span className="text-[8px] text-white/40">♪</span>
+            </div>
+          )}
           <span className="text-xs text-white/60 font-light truncate">
             {session.name}
           </span>

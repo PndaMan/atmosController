@@ -9,6 +9,7 @@ export interface AudioSession {
   isMuted: boolean
   appName: string
   pid?: number
+  icon?: string
 }
 
 interface PowerShellResult {
@@ -106,7 +107,8 @@ export class AudioSessionManager {
           volume: Math.round(session.Volume) || 100,
           isMuted: session.IsMuted || false,
           appName: session.Name || 'Unknown',
-          pid: session.Pid
+          pid: session.Pid,
+          icon: session.Icon
         }))
       }
 

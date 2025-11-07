@@ -343,12 +343,33 @@ try {
             $sessions = [WASAPIControl.AudioSessionManager]::GetSessions()
             $result = @()
             foreach ($session in $sessions) {
+                # Get process icon
+                $iconBase64 = $null
+                try {
+                    $process = Get-Process -Id $session.ProcessId -ErrorAction SilentlyContinue
+                    if ($process -and $process.Path) {
+                        $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($process.Path)
+                        if ($icon) {
+                            $bitmap = $icon.ToBitmap()
+                            $memStream = New-Object System.IO.MemoryStream
+                            $bitmap.Save($memStream, [System.Drawing.Imaging.ImageFormat]::Png)
+                            $iconBase64 = [Convert]::ToBase64String($memStream.ToArray())
+                            $memStream.Dispose()
+                            $bitmap.Dispose()
+                            $icon.Dispose()
+                        }
+                    }
+                } catch {
+                    # Silently ignore icon extraction errors
+                }
+
                 $result += @{
                     Id = $session.ProcessId.ToString()
                     Name = $session.DisplayName
                     Pid = $session.ProcessId
                     Volume = [Math]::Round($session.Volume)
                     IsMuted = $session.IsMuted
+                    Icon = $iconBase64
                 }
             }
             $result | ConvertTo-Json -Depth 10
