@@ -55,7 +55,8 @@
       "target": [
         "dir"
       ],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "executableName": "atmosController"
     },
     "nsis": {
       "oneClick": false,

@@ -14,15 +14,8 @@ function App() {
       >
         {/* Main glass window with animated glow */}
         <div className="glass-window glow-border rounded-lg p-6 min-w-[420px] max-w-[500px]">
-          {/* Header bar (draggable) */}
-          <div className="drag-region mb-6">
-            <h1 className="text-lg font-medium text-white/90 tracking-wider">
-              atmosController
-            </h1>
-          </div>
-
-          {/* Audio Visualizer */}
-          <div className="no-drag-region mb-4">
+          {/* Audio Visualizer with header */}
+          <div className="mb-4">
             <AudioVisualizer />
           </div>
 

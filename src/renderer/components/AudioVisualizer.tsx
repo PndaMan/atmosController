@@ -13,6 +13,17 @@ export function AudioVisualizer() {
   useEffect(() => {
     if (isActive) {
       visualize()
+    } else {
+      // Clear canvas when visualizer is turned off
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d')
+        if (ctx) {
+          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        }
+      }
+      // Reset bar values to zero
+      barsRef.current = Array(32).fill(0)
+      targetBarsRef.current = Array(32).fill(0)
     }
     return () => {
       if (animationFrameRef.current) {
@@ -116,10 +127,13 @@ export function AudioVisualizer() {
 
   return (
     <div className="glass rounded-md p-4 border border-white/5">
-      <div className="flex items-center justify-end mb-3">
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="drag-region text-lg font-medium text-white/90 tracking-wider flex-1 cursor-move">
+          atmosController
+        </h1>
         <button
           onClick={toggleVisualizer}
-          className={`px-2 py-1 rounded text-[10px] font-medium transition-all duration-200 border
+          className={`no-drag-region px-2 py-1 rounded text-[10px] font-medium transition-all duration-200 border
                     ${isActive
                       ? 'bg-violet-500/20 border-violet-500/40 text-violet-400 hover:bg-violet-500/30'
                       : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'}`}

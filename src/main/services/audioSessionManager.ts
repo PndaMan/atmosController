@@ -26,7 +26,7 @@ export class AudioSessionManager {
     if (app.isPackaged) {
       this.scriptsPath = path.join(process.resourcesPath, 'scripts')
     } else {
-      this.scriptsPath = path.join(__dirname, '../../scripts')
+      this.scriptsPath = path.join(__dirname, '../scripts')
     }
     this.initialize()
   }
